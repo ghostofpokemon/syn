@@ -62,7 +62,27 @@ class Synonym:
             antonyms = [colors[ant['similarity']] + ant['term'] + "[/]" for ant in definition.get('antonyms', [])]
             definitions_synonyms_antonyms.append((f"{pos}. {def_text}", synonyms, antonyms))
         return definitions_synonyms_antonyms
+    
+    def plain(self):
+        response_text = self.fetch_data()
+        if response_text:
+            self.parse_data(response_text)
+            definitions_synonyms_antonyms = self.extract_info()
+            self.display_plain_definitions(definitions_synonyms_antonyms)
 
+    def display_plain_definitions(self, definitions_synonyms_antonyms):
+        for definition, synonyms, antonyms in definitions_synonyms_antonyms:
+            def_split = definition.split('.')
+            part_of_speech = def_split[0]
+            def_text = def_split[1].strip()
+            print(f"❯ {def_text} ({part_of_speech})")
+            print("⬤ Synonyms: " + ", ".join([syn[syn.find(']')+1:syn.rfind('[')] for syn in synonyms]))
+            if antonyms:
+                print("⬤ Antonyms: " + ", ".join([ant[ant.find(']')+1:ant.rfind('[')] for ant in antonyms]))
+            print()
+
+
+    
     def rich(self):
         response_text = self.fetch_data()
         if response_text:
@@ -71,7 +91,7 @@ class Synonym:
             self.display_definitions(definitions_synonyms_antonyms)
 
     def display_definitions(self, definitions_synonyms_antonyms):
-        console = Console()
+        console = Console() 
         for definition, synonyms, antonyms in definitions_synonyms_antonyms:
             def_split = definition.split('.')
             part_of_speech = def_split[0]
